@@ -41,13 +41,13 @@ namespace MVCRestaurant.Infrastructure
         {
             AppUser appUser1 = new AppUser()
             {
-                Email = "Sadmin@g.com",
-                NormalizedEmail = "Sadmin@g.com".ToUpper(),
+                Email = "XXXXXXXXXXXXXX@X.com",
+                NormalizedEmail = "XXXXXXXXXXXXXX@X.com".ToUpper(),
                 EmailConfirmed = true,
                 Id = "B37C0271-DDD7-4124-AD52-69360F5A219F",
                 AltKey = 1,
-                UserName = "ادمین کل",
-                NormalizedUserName = "ادمین کل".ToUpper(),
+                UserName = "XXXXXXXXXXXXXX",
+                NormalizedUserName = "XXXXXXXXXXXXXX".ToUpper(),
             };
 
             var hasher = new PasswordHasher<AppUser>();
