@@ -1,0 +1,66 @@
+html {
+    font-size: 14px;
+    direction: rtl;
+    text-align: right;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 16px;
+  }
+}
+
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+    background: repeating-linear-gradient(to left,#d63838, #ff8f8f 120px, white 120px, #fff0f0 240px);
+}
+
+#orderButton:hover {
+    color: black;
+}
+
+.QCUI {
+    display: inline;
+    font-size: 22px;
+}
+
+.QCUI i:hover{
+    color: white;
+    cursor: pointer;
+}
+
+@media (min-width: 768px) {
+    .QCUI {
+        font-size: 25px;
+    }
+}
+
+input.input-validation-error,
+textarea.input-validation-error,
+select.input-validation-error {
+    background: #FEF1EC;
+    border: 1px solid #CD0A0A;
+}
+
+/*
+.btn-group > .btn,
+.btn-group-vertical > .btn {
+    position: relative;
+    float: right;
+}
+
+.btn-group > .btn:first-child:not(:last-child):not(.dropdown-toggle) {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.btn-group > .btn:last-child:not(:first-child),
+.btn-group > .dropdown-toggle:not(:first-child) {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+*/
