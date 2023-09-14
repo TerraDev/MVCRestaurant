@@ -1,0 +1,54 @@
+﻿@model MVCRestaurant.ViewModels.User.RegisterViewModel
+
+@{
+    ViewData["Title"] = "ثبت نام";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<hr />
+<div class="row">
+    <div class="col-md-3"></div>
+    <div class="col-md-6 text-white bg-dark bg-gradient" style="border-radius:0.25rem">
+        <form asp-action="Register">
+            <div asp-validation-summary="ModelOnly" class="text-danger mt-3"></div>
+            <div class="form-group mt-3">
+                <label asp-for="Username" class="control-label"></label>
+                <input asp-for="Username" class="form-control" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-3">
+                <label asp-for="Email" class="control-label"></label>
+                <input asp-for="Email" class="form-control" />
+                <span asp-validation-for="Email" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-3">
+                <label asp-for="Password" class="control-label"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+            <div class="form-group mt-3">
+                <label asp-for="ConfirmPassword" class="control-label"></label>
+                <input asp-for="ConfirmPassword" class="form-control" />
+                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+            </div>
+            <div class="form-group my-3">
+                <input type="submit" value="Register" class="btn btn-primary" />
+            </div>
+        </form>
+
+        <div style="direction: ltr; text-align:left">
+            <p>
+                Already have an account? <a asp-action="Login">Sign in here</a> <br>
+                <a asp-action="Index" asp-controller="Home">Go back</a>
+            </p>
+        </div>
+
+    </div>
+    <div class="col-md-3"></div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

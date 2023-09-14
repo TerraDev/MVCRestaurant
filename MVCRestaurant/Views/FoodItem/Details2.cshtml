@@ -1,0 +1,48 @@
+﻿@model MVCRestaurant.ViewModels.FoodItemViewModel
+
+@{
+    ViewData["Title"] = "اطلاعات غذا";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<div class="row bg-info shadow bg-opacity-10" style="margin-top: 80px; border-radius: 10px">
+    <div class="col-md-6" style="padding: 20px;">
+        @if(string.IsNullOrEmpty(Model.ImagePath))
+        {
+            <img src="/static/tmp/food-icon-default.jpg" alt="Card image" width="100%"
+             style="max-width: 300px; display: block; margin-left: auto;margin-right: auto; border-radius: 10px">
+        }
+        else
+        {
+            <img src="@Model.ImagePath" alt="Card image" width="100%"
+             style="max-width: 300px; display: block; margin-left: auto;margin-right: auto; border-radius: 10px">
+        }
+    </div>
+    <div class="col-md-6 d-flex flex-column justify-content-center align-items-center" style="padding: 0px;">
+        <div class="my-2">
+            @Html.LabelFor(model => model.name):
+            @Html.DisplayFor(model => model.name)
+        </div>
+        <div class="my-2">
+            @Html.LabelFor(model => model.category.name):
+            @Html.DisplayFor(model => model.category.name)
+        </div>
+        <div class="my-2">
+            @Html.LabelFor(model => model.price):
+            @Html.DisplayFor(model => model.price) تومان
+        </div>
+        @if (ViewBag.orderDic.ContainsKey(Model.id))
+        {
+            <span id="foodItem_@Model.id" class="QCUI my-2">
+                <i class="bi bi-caret-up-square-fill" style="display:inline;" onclick="AddToCart(@Model.id, true)"></i>
+                <p style="display:inline">@ViewBag.orderDic[Model.id]</p>
+                <i class="bi bi-caret-down-square-fill" style="display:inline;" onclick="AddToCart(@Model.id, false)"></i>
+            </span>
+        }
+        else{
+            <a class="btn btn-primary my-2" onclick="AddToCart(@Model.id,true)">افزودن به سبد خرید</a>
+        }
+    </div>
+</div>

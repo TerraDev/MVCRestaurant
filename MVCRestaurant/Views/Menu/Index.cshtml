@@ -1,0 +1,229 @@
+﻿@model IEnumerable<MVCRestaurant.ViewModels.FoodCategoryViewModel>
+
+@{
+    ViewData["Title"] = "مدیریت دسته‌بندی";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+
+<link rel="stylesheet" href="~/lib/toastr.js/toastr.min.css" />
+
+@if (!User.IsInRole("Employee")){
+    <button class="btn btn-primary mt-5 mb-2" onclick="LoadCreateModal()">ایجاد دسته‌بندی</button>
+}
+
+<div class="table-responsive bg-dark text-center mb-5">
+    <table class="table table-condensed table-dark table-hover table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>
+                    #
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Icon)
+                </th>
+                <th>
+                    عملیات
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int i = 0;
+            }
+            @foreach (var item in Model)
+            {
+                i++;
+                <tr>
+                    <td>
+                        @i
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Icon)
+                        ( <i class="@Html.DisplayFor(modelItem => item.Icon)" style="font-size:20px"></i> )
+                    </td>
+                    <td>
+                        <button type="button" class="btn btn-outline-info btn-sm" onclick="LoadDetailsModal(@item.id)">
+                            <i class="bi bi-info-circle"></i>
+                        </button>
+                        @if(!User.IsInRole("Employee"))
+                        {
+                            <button type="button" class="btn btn-outline-light btn-sm" onclick="LoadEditModal(@item.id)">
+                                <i class="bi bi-pencil"></i>
+                            </button>
+                            <button type="button" class="btn btn-outline-danger btn-sm" onclick="LoadDeleteModal(@item.id)">
+                                <i class="bi bi-trash3"></i>
+                            </button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>
+
+<div id="__modalContainer">
+</div>
+
+@section Scripts{
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("_UnobtrusiveAjaxPartial");
+    }
+
+
+
+    <script>
+        let modalContainerId = "__modalContainer"
+        let modalTriggerId = "__modalTrigger"
+        let modalBodyId = "__modalBody"
+        let modalButtonId = "__SUB"
+        let modalTitleId = "__modalTitle"
+        let modalCloseId = "__modalClose"
+        let modalActionButtonId = "__modalAction"
+
+        DeclareModal(modalContainerId, modalTriggerId, modalBodyId, modalButtonId, modalTitleId, modalCloseId, modalActionButtonId)
+
+        function LoadDetailsModal(itemId) {
+            $("#" + modalBodyId).html("<div>Loading...</div>")
+            $("#" + modalActionButtonId).hide()
+            $("#" + modalTriggerId).modal("show")
+            $.ajax({
+                url: "/Menu/Details?categoryId=" + itemId,
+                type: 'GET',
+                dataType: 'html', //data type
+                success: function (res) {
+                    $("#" + modalTitleId).html("اطلاعات دسته")
+                    $("#" + modalBodyId).html(res)
+                },
+                error: function (jqXHR, exception) {
+                    console.log(jqXHR);
+                    ToastrFail()
+                    // error handling logic here...
+                }
+            });
+        }
+
+        function LoadEditModal(itemId) {
+            $("#" + modalBodyId).html("<div>Loading...</div>")
+            $("#" + modalActionButtonId).hide()
+            $("#" + modalTriggerId).modal("show")
+            $.ajax({
+                url: "/Menu/Edit?categoryId=" + itemId,
+                type: 'GET',
+                dataType: 'html', //data type
+                success: function (res) {
+                    $("#" + modalTitleId).html("ویرایش دسته")
+                    $("#" + modalActionButtonId).html("ذخیره تغییرات")
+                    $("#" + modalActionButtonId).removeClass();
+                    $("#" + modalActionButtonId).addClass("btn btn-primary mr-2");
+                    $("#" + modalBodyId).html(res)
+                    ActivateValidation()
+                    $("#" + modalActionButtonId).show()
+                },
+                error: function (jqXHR, exception) {
+                    console.log(jqXHR);
+                    ToastrFail()
+                    // error handling logic here...
+                }
+            });
+        }
+
+        function LoadDeleteModal(itemId) {
+            $("#" + modalBodyId).html("<div>Loading...</div>")
+            $("#" + modalActionButtonId).hide()
+            $("#" + modalTriggerId).modal("show")
+            $.ajax({
+                url: "/Menu/Delete?categoryId=" + itemId,
+                type: 'GET',
+                dataType: 'html', //data type
+                success: function (res) {
+                    $("#" + modalTitleId).html("حذف دسته")
+                    $("#" + modalActionButtonId).html("حذف دسته")
+                    $("#" + modalActionButtonId).removeClass();
+                    $("#" + modalActionButtonId).addClass("btn btn-danger mr-2");
+                    $("#" + modalBodyId).html(res)
+                    ActivateValidation()
+                    $("#" + modalActionButtonId).show()
+                },
+                error: function (jqXHR, exception) {
+                    console.log(jqXHR);
+                    ToastrFail()
+                    // error handling logic here...
+                }
+            });
+        }
+
+        function LoadCreateModal() {
+            //console.log("Hit Create!")
+            $("#" + modalBodyId).html("<div>Loading...</div>")
+            $("#" + modalActionButtonId).hide()
+            $("#" + modalTriggerId).modal("show")
+            $.ajax({
+                url: "/Menu/Create",
+                type: 'GET',
+                dataType: 'html', //data type
+                success: function (res) {
+                    $("#" + modalTitleId).html("ایجاد دسته")
+                    $("#" + modalActionButtonId).html("ایجاد دسته")
+                    $("#" + modalActionButtonId).removeClass();
+                    $("#" + modalActionButtonId).addClass("btn btn-success mr-2");
+                    $("#" + modalBodyId).html(res)
+                    ActivateValidation()
+                    $("#" + modalActionButtonId).show()
+                },
+                error: function (jqXHR, exception) {
+                    console.log(jqXHR); 
+                    ToastrFail()
+                    // error handling logic here...
+                }
+            });
+        }
+
+        function ActivateValidation()
+        {
+            $("#form").removeData('validator');
+            $("#form").removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse("form");
+        }
+
+        function ToastrFail(){
+            //console.log("ToastrFail");
+            toastr["error"]("!خطا")
+        }
+
+        function ToastrSuccess(){
+            //console.log("ToastrSuccess");
+            toastr["success"]("عملیات با موفقیت انجام شد.")
+        }
+
+    </script>
+
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-left",
+            "preventDuplicates": false,
+            "showDuration": "50",
+            "hideDuration": "50",
+            "timeOut": "2000",
+            "extendedTimeOut": "100",
+            "showEasing": "swing",
+            "hideEasing": "swing",
+            "showMethod": "slideDown",
+            "hideMethod": "hide"
+        }
+    </script>
+}

@@ -1,0 +1,84 @@
+﻿@{
+    ViewData["Title"] = "صفحه اصلی";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="text-center bg-opacity-75 bg-light shadow-lg">
+    <h1 class="display-4 mt-3">Welcome To MVC Restaurant</h1>
+    <p>This website is developed by Behdad Alagha</p>
+</div>
+
+<div id="PIZZA-Container" class="align-items-center text-center mb-5 pb-5">
+    <a class="d-inline-block text-decoration-none" asp-controller="Menu" asp-action="Main">
+        <p class="d-inline-block fs-4 fw-bolder fst-italic text-warning">Menu</p>
+        <img id="PIZZA-Slice" class="d-inline-block" src="~/static/tmp/pizza.256x203.png" />
+    </a>
+    <a asp-controller="Menu" asp-action="Main">
+        <img id="PIZZA" class="d-inline-block" src="~/static/tmp/Pizza-icon.png" />
+    </a>
+    <a asp-action="About" class="d-inline-block text-decoration-none">
+        <img id="PIZZA-Slice" class="d-inline-block" src="~/static/tmp/pizza.256x203.png"
+                style="-webkit-transform: scaleX(-1); transform: scaleX(-1);" />
+        <p class="d-inline-block fs-5 fst-italic text-warning">About</p>
+    </a>
+</div>
+
+<style>
+    #PIZZA {
+        width: 250px;
+        -webkit-animation: spin 20s linear infinite;
+        -moz-animation: spin 20s linear infinite;
+        animation: spin 20s linear infinite;
+    }
+
+    @@-moz-keyframes spin { 
+    100% { -moz-transform: rotate(360deg); } 
+    }
+
+    @@-webkit-keyframes spin { 
+        100% { -webkit-transform: rotate(360deg); } 
+    }
+
+    @@keyframes spin { 
+        100% { 
+            -webkit-transform: rotate(360deg); 
+            transform:rotate(360deg); 
+        } 
+    }
+
+    #PIZZA-Container{
+        margin-top: 10vh;
+    }
+
+    #PIZZA-Slice {
+        width: 125px;
+    }
+
+    @@media (max-width: 767px) {
+        #PIZZA {
+            width: 150px;
+        }
+
+        #PIZZA-Slice {
+            width: 83px;
+        }
+
+        #PIZZA-Container {
+            margin-top: 12vh;
+        }
+    }
+
+    @@media (max-width: 460px) {
+        #PIZZA {
+            width: 100px;
+        }
+
+        #PIZZA-Slice {
+            width: 50px;
+        }
+
+        #PIZZA-Container {
+            margin-top: 25vh;
+        }
+    }
+</style>

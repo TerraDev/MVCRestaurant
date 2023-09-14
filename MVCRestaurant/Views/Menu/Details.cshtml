@@ -1,0 +1,23 @@
+﻿@model MVCRestaurant.ViewModels.FoodCategoryViewModel
+
+@{
+    Layout = null;
+}
+
+<div class="row">
+    <div class = "col-md-6">
+        @Html.DisplayNameFor(model => model.id):
+        @Html.DisplayFor(model => model.id)
+    </div>
+    <div class="col-md-6">
+        @Html.DisplayNameFor(model => model.name):
+        @Html.DisplayFor(model => model.name)
+    </div>
+</div>
+<hr/>
+<div class="row">
+    <div class="col-md-6">
+        @Html.DisplayNameFor(model => model.Icon):
+        @Html.DisplayFor(model => model.Icon)
+    </div>
+</div>

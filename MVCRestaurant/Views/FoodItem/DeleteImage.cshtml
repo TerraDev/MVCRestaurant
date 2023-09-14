@@ -1,0 +1,32 @@
+﻿@model MVCRestaurant.ViewModels.FoodItemViewModel
+@{
+    Layout = null;
+}
+
+<h3>آیا میخواهید تصویر این غذا را حذف نمایید؟</h3>
+<div>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.name)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.name)
+        </dd>
+    </dl>
+    <img src="@Model.ImagePath" style="width: 100%; aspect-ratio: 1/1" />
+    <form data-ajax-mode="replace" asp-action="DeleteImage" id="form">
+        @{
+            ulong foodId = Model.id;
+            @Html.HiddenFor(x => foodId)
+            ;
+        }
+        <input id="__SUB" type="submit" value="Delete Image" class="btn btn-danger" hidden />
+    </form>
+</div>
+
+<script>
+    // DeclareModal.setAjaxUpdateId is defined in site.js
+    $("#form").on("customEvent", DeclareModal.EnhanceAjaxForm);
+    $("#form").trigger("customEvent");
+</script>

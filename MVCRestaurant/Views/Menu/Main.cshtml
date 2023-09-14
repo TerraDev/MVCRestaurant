@@ -1,0 +1,109 @@
+﻿@model IEnumerable<MVCRestaurant.ViewModels.FoodCategoryViewModel>
+@{
+    ViewData["Title"] = "منوی غذا";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="btn-group btn-group-lg mt-5 d-flex align-items-center justify-content-center" role="group" aria-label="">
+@foreach (var item in Model) {
+    <button type="button" class="btn btn-primary rounded-0" id="category_@item.id"
+            onclick="LoadInitialFoodData('@item.id')">
+            <i class="@item.Icon" style="font-size: 24px"></i> @item.name
+    </button>
+}
+</div>
+
+<div id="TopFood" class="row" style="margin-top: 37px;" >
+    
+</div>
+<div id="scroll-sentinel" class="text-center mb-5"></div>
+
+@section Scripts{
+<script>
+    function LoadInitialFoodData(categoryId)
+    {
+        if(categoryId!=currentCatId)
+        {
+            //console.log("LoadInitialFoodData: " + categoryId + "  ---  PageCount: " + pageCount)
+            pageCount = 0
+            //debugger;
+            $("#scroll-sentinel").html("در حال بارگذاری...")
+            $.ajax({
+                url: "/Menu/FoodList?categoryId=" + categoryId + "&pageNum=1",
+                type: 'GET',
+                dataType: 'html', //data type
+                success: function (res) {
+                    //console.log("--Message: \n" + res);
+                    $('#TopFood').empty();
+                    swapActive(categoryId);
+                    currentCatId = categoryId;
+                    $('#TopFood').append(res);
+                    pageCount = 1;
+                    $("#scroll-sentinel").empty();
+                },
+                error: function (jqXHR, exception) {
+                    console.log(jqXHR);
+                    // error handling logic here...
+                    pageCount = 0
+                    $("#scroll-sentinel").empty();
+                }
+            });
+            
+        }
+    }
+
+    function LoadMoreFoodData(categoryId)
+    {
+            if (categoryId == currentCatId && pageCount > 0) {
+            //console.log("LoadMoreFoodData: " + categoryId + "  ---  PageCount: " + pageCount)
+            //debugger;
+            let pn = pageCount+1
+            $("#scroll-sentinel").html("در حال بارگذاری...")
+            $.ajax({
+                url: "/Menu/FoodList?categoryId=" + categoryId + "&pageNum=" + pn,
+                type: 'GET',
+                dataType: 'html', //data type
+                success: function (res) {
+                    //console.log("--Message: \n" + res);
+                    $('#TopFood').append(res);
+                    pageCount++
+                    $("#scroll-sentinel").empty();
+                },
+                 error: function (jqXHR, exception) {
+                    console.log(jqXHR);
+                    // error handling logic here...
+                    $("#scroll-sentinel").empty();
+                }
+            });
+        }
+    }
+
+    function swapActive(categoryId)
+    {
+            let currId = "#category_" + currentCatId;
+            let newId = "#category_" + categoryId;
+            $(currId).removeClass("btn-info")
+            $(currId).addClass("btn-primary")
+            $(newId).removeClass("btn-primary")
+            $(newId).addClass("btn-info")
+    }
+
+    var currentCatId = 0;
+    let pageCount = 0;
+    LoadInitialFoodData(@Model.First().id);
+
+    const observer = new IntersectionObserver((entries, observer) => {
+        // Loop through the entries
+        for (const entry of entries) {
+            // Check if the entry is intersecting the viewport
+            if (entry.isIntersecting) {
+                // Load more content
+                LoadMoreFoodData(currentCatId);
+            }
+        }
+    });
+
+    const scrollSentinel = document.querySelector("#scroll-sentinel");
+    observer.observe(scrollSentinel);
+</script>
+}

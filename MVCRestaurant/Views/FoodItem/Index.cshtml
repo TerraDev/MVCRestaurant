@@ -1,0 +1,315 @@
+﻿@model IEnumerable<MVCRestaurant.ViewModels.FoodItemViewModel>
+
+@{
+    ViewData["Title"] = "مدیریت منو";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link rel="stylesheet" href="~/lib/toastr.js/toastr.min.css" />
+
+<h1>@ViewData["Title"]</h1>
+
+<button class="btn btn-primary mt-5 mb-2" onclick="LoadCreateModal()">غذای جدید</button>
+
+<div class="table-responsive bg-dark text-center mb-5">
+    <form asp-action="Index" method="get" class="row my-2 m-3">
+        <div class="form-group col-sm-6 mb-2">
+            <input name="nameFilter" class="form-control form-control-sm" style="width:100%" type="text" placeholder="نام غذا">
+        </div>
+        <div class="form-group col-sm-3 mb-2">
+            <select name="categoryFilter" asp-items="@ViewBag.categories" class="form-select form-select-sm mx-0" style="width:100%">
+                <option value="0">بدون دسته‌بندی</option>
+            </select>
+        </div>
+        <div class="form-group col-sm-3">
+            <input type="submit" class="form-control form-control-sm btn btn-light btn-sm mx-0" style="width:100%" value="اعمال فیلتر">
+        </div>
+    </form>
+    <table class="table table-condensed table-dark table-hover table-striped table-bordered">
+    <thead>
+        <tr>
+            <th>
+                #
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.category.name)
+            </th>
+            <th>
+                عملیات
+            </th>
+        </tr>
+    </thead>
+    <tbody>
+    @{
+        int i = 0;
+    }
+@foreach (var item in Model) {
+    i++;
+                <tr>
+            <td>
+                @i
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.price)
+            </td>
+            <th>
+                @Html.DisplayFor(model => item.category.name)
+            </th>
+            <td>
+                <button type="button" class="btn btn-outline-info btn-sm" onclick="LoadDetailsModal(@item.id)">
+                    <i class="bi bi-info-circle"></i>
+                </button>
+                <button type="button" class="btn btn-outline-light btn-sm" onclick="LoadEditModal(@item.id)">
+                    <i class="bi bi-pencil"></i>
+                </button>
+                @if (item.ImagePath != null)
+                {
+                    <button type="button" class="btn btn-outline-warning btn-sm" onclick="LoadDeleteImageModal(@item.id)">
+                        <i class="bi bi-file-x"></i>
+                    </button>
+                }
+                <button type="button" class="btn btn-outline-danger btn-sm" onclick="LoadDeleteModal(@item.id)">
+                    <i class="bi bi-trash3"></i>
+                </button>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>
+    @*pagination begins*@
+    <nav class="h-100 d-flex align-items-center justify-content-center" aria-label="Page navigation">
+        <ul class="pagination">
+            @{
+                string tmp = Context.Request.Query["pageNum"].ToString();
+                int pageNum1 = string.IsNullOrEmpty(tmp) ? 1 : int.Parse(tmp);
+                int pageNum0 = pageNum1 - 1;
+                int pageNum2 = pageNum1 + 1;
+                string disabled1 = pageNum1 == 1 ? "disabled" : "";
+                @if (pageNum1 > 1)
+                {
+                    <li class="page-item @disabled1">
+                        <a asp-action="Index" class="page-link bg-dark" 
+                        aria-label="Previous" style="border-radius: 0px 15px 15px 0px;"
+                        asp-route-pageNum="1" asp-route-nameFilter="@Context.Request.Query["nameFilter"]"
+                        asp-route-categoryFilter="@Context.Request.Query["categoryFilter"]">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link bg-dark border-bottom"
+                    asp-route-pageNum="@pageNum0" asp-route-nameFilter="@Context.Request.Query["nameFilter"]"
+                    asp-route-categoryFilter="@Context.Request.Query["categoryFilter"]" >
+                    @Html.DisplayFor(x => pageNum0)</a></li>
+                }
+                <li class="page-item"><a class="page-link rounded-0">
+                @Html.DisplayFor(x => pageNum1)</a></li>
+
+                @if(pageNum1 < @ViewBag.TotalPages)
+                {
+                    <li class="page-item"><a class="page-link bg-dark"
+                    asp-route-pageNum="@pageNum2"
+                    asp-route-nameFilter="@Context.Request.Query["nameFilter"]"
+                    asp-route-categoryFilter="@Context.Request.Query["categoryFilter"]">
+                    @Html.DisplayFor(x => pageNum2)</a></li>
+                    <li class="page-item">
+                        <a class="page-link bg-dark" aria-label="Next" style="border-radius: 15px 0px 0px 15px;"
+                        asp-route-pageNum="@ViewBag.TotalPages" 
+                        asp-route-nameFilter="@Context.Request.Query["nameFilter"]"
+                        asp-route-categoryFilter="@Context.Request.Query["categoryFilter"]">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                }
+            }
+        </ul>
+    </nav>
+    @*pagination ends*@
+</div>
+
+<div id="__modalContainer">
+</div>
+
+@section Scripts{
+
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+        await Html.RenderPartialAsync("_UnobtrusiveAjaxPartial");
+    }
+
+    <script>
+        let modalContainerId = "__modalContainer"
+        let modalTriggerId = "__modalTrigger"
+        let modalBodyId = "__modalBody"
+        let modalButtonId = "__SUB"
+        let modalTitleId = "__modalTitle"
+        let modalCloseId = "__modalClose"
+        let modalActionButtonId = "__modalAction"
+
+        DeclareModal(modalContainerId, modalTriggerId, modalBodyId, modalButtonId, modalTitleId, modalCloseId, modalActionButtonId)
+
+        function LoadDetailsModal(itemId) {
+            $("#" + modalBodyId).html("<div>Loading...</div>")
+            $("#" + modalActionButtonId).hide()
+            $("#" + modalTriggerId).modal("show")
+            $.ajax({
+                url: "/FoodItem/Details?foodId=" + itemId,
+                type: 'GET',
+                dataType: 'html', //data type
+                success: function (res) {
+                    $("#" + modalTitleId).html("اطلاعات غذا")
+                    $("#" + modalBodyId).html(res)
+                },
+                error: function (jqXHR, exception) {
+                    console.log(jqXHR);
+                    ToastrFail()
+                    // error handling logic here...
+                }
+            });
+        }
+
+        function LoadEditModal(itemId) {
+            $("#" + modalBodyId).html("<div>Loading...</div>")
+            $("#" + modalActionButtonId).hide()
+            $("#" + modalTriggerId).modal("show")
+            $.ajax({
+                url: "/FoodItem/Edit?foodId=" + itemId,
+                type: 'GET',
+                dataType: 'html', //data type
+                success: function (res) {
+                    $("#" + modalTitleId).html("ویرایش غذا")
+                    $("#" + modalActionButtonId).html("ذخیره تغییرات")
+                    $("#" + modalActionButtonId).removeClass();
+                    $("#" + modalActionButtonId).addClass("btn btn-primary mr-2");
+                    $("#" + modalBodyId).html(res)
+                    ActivateValidation()
+                    $("#" + modalActionButtonId).show()
+                },
+                error: function (jqXHR, exception) {
+                    console.log(jqXHR);
+                    ToastrFail()
+                    // error handling logic here...
+                }
+            });
+        }
+
+        function LoadDeleteModal(itemId) {
+            $("#" + modalBodyId).html("<div>Loading...</div>")
+            $("#" + modalActionButtonId).hide()
+            $("#" + modalTriggerId).modal("show")
+            $.ajax({
+                url: "/FoodItem/Delete?foodId=" + itemId,
+                type: 'GET',
+                dataType: 'html', //data type
+                success: function (res) {
+                    $("#" + modalTitleId).html("حذف غذا")
+                    $("#" + modalActionButtonId).html("حذف غذا")
+                    $("#" + modalActionButtonId).removeClass();
+                    $("#" + modalActionButtonId).addClass("btn btn-danger mr-2");
+                    $("#" + modalBodyId).html(res)
+                    ActivateValidation()
+                    $("#" + modalActionButtonId).show()
+                },
+                error: function (jqXHR, exception) {
+                    console.log(jqXHR);
+                    ToastrFail()
+                    // error handling logic here...
+                }
+            });
+        }
+
+        function LoadDeleteImageModal(itemId) {
+            $("#" + modalBodyId).html("<div>Loading...</div>")
+            $("#" + modalActionButtonId).hide()
+            $("#" + modalTriggerId).modal("show")
+            $.ajax({
+                url: "/FoodItem/DeleteImage?foodId=" + itemId,
+                type: 'GET',
+                dataType: 'html', //data type
+                success: function (res) {
+                    $("#" + modalTitleId).html("حذف تصویر غذا")
+                    $("#" + modalActionButtonId).html("حذف تصویر")
+                    $("#" + modalActionButtonId).removeClass();
+                    $("#" + modalActionButtonId).addClass("btn btn-danger mr-2");
+                    $("#" + modalBodyId).html(res)
+                    ActivateValidation()
+                    $("#" + modalActionButtonId).show()
+                },
+                error: function (jqXHR, exception) {
+                    console.log(jqXHR);
+                    ToastrFail()
+                    // error handling logic here...
+                }
+            });
+        }
+
+        function LoadCreateModal() {
+            //console.log("Hit Create!")
+            $("#" + modalBodyId).html("<div>Loading...</div>")
+            $("#" + modalActionButtonId).hide()
+            $("#" + modalTriggerId).modal("show")
+            $.ajax({
+                url: "/FoodItem/Create",
+                type: 'GET',
+                dataType: 'html', //data type
+                success: function (res) {
+                    $("#" + modalTitleId).html("ایجاد غذای جدید")
+                    $("#" + modalActionButtonId).html("ایجاد غذای جدید")
+                    $("#" + modalActionButtonId).removeClass();
+                    $("#" + modalActionButtonId).addClass("btn btn-success mr-2");
+                    $("#" + modalBodyId).html(res)
+                    ActivateValidation()
+                    $("#" + modalActionButtonId).show()
+                },
+                error: function (jqXHR, exception) {
+                    console.log(jqXHR);
+                    ToastrFail()
+                    // error handling logic here...
+                }
+            });
+        }
+
+        function ActivateValidation() {
+            $("#form").removeData('validator');
+            $("#form").removeData('unobtrusiveValidation');
+            $.validator.unobtrusive.parse("form");
+        }
+
+         function ToastrFail(){
+            //console.log("ToastrFail");
+            toastr["error"]("!خطا")
+        }
+
+        function ToastrSuccess(){
+            //console.log("ToastrSuccess");
+            toastr["success"]("عملیات با موفقیت انجام شد.")
+        }
+    </script>
+
+    <script src="~/lib/toastr.js/toastr.min.js"></script>
+    <script>
+        toastr.options = {
+            "closeButton": true,
+            "debug": false,
+            "newestOnTop": false,
+            "progressBar": true,
+            "positionClass": "toast-bottom-left",
+            "preventDuplicates": false,
+            "showDuration": "50",
+            "hideDuration": "50",
+            "timeOut": "2000",
+            "extendedTimeOut": "100",
+            "showEasing": "swing",
+            "hideEasing": "swing",
+            "showMethod": "slideDown",
+            "hideMethod": "hide"
+        }
+    </script>
+}

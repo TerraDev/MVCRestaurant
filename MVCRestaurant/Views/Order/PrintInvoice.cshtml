@@ -1,0 +1,121 @@
+﻿@model MVCRestaurant.ViewModels.OrderViewModel
+
+@{
+    Layout = null;
+    ViewData["Title"] = "پرینت فاکتور";
+}
+
+<div id="cont" style="direction: rtl">
+    <h2>فاکتور خرید:</h2>
+    <br/>
+    <p style="display:inline">شناسه‌ی خرید: </p>
+    <span style="display:inline">@Html.DisplayFor(x => x.Identifier)</span>
+    <style>
+        table, td, th {
+            border: 1px solid black;
+            text-align: center;
+            border-collapse: collapse;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .MyBtn{
+            background-color: #008CBA;
+            color: white;
+            border: 2px solid #008CBA;
+            padding: 16px 32px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            transition-duration: 0.4s;
+            cursor: pointer;
+            border-radius: 4px
+        }
+
+        .YellowBtn{
+            background-color: #f7db07;
+            border: 2px solid #f7db07;
+        }
+
+        .MyBtn:hover {
+            color:black;
+            background-color: white;
+        }
+        
+    </style>
+    <table width="100%">
+        <tr>
+            <th>ردیف</th>
+            <th>غذا</th>
+            <th>قیمت</th>
+            <th>تعداد</th>
+            <th>قیمت کل</th>
+        </tr>
+        @{uint i = 0;}
+        @foreach (OrderItemViewModel item in Model.orderItems)
+        {
+            i++;
+            <tr>
+                <td>@i</td>
+                <td>@Html.DisplayFor(x => item.food.name)</td>
+                <td>@Html.DisplayFor(x => item.food.price)</td>
+                <td>@Html.DisplayFor(x => item.quantity)</td>
+                <td>
+                    @{
+                        ulong total = item.quantity * item.food.price ;
+                    }
+                    @Html.DisplayFor(x => total)
+                </td>
+            </tr>
+        }
+        <tr>
+            <td colspan="4">مجموع</td>
+            <td>@Html.DisplayFor(x => x.Total)</td>
+        </tr>
+        <tr>
+            <td colspan="4">مالیات</td>
+            @{
+                float tax1 = Model.Tax * 100;
+            }
+            <td>@Html.DisplayFor(x => tax1) %</td>
+        </tr>
+        <tr style="height:50px; font-size: 20px">
+
+            <td colspan="4"><b>قیمت نهایی</b></td>
+            <td><b>@Html.DisplayFor(x => x.FinalPrice) تومان</b></td>
+
+        </tr>
+        <tr>
+            <td colspan="4">شماره انتظار: 431</td>
+        </tr>
+    </table>
+    @if(Model.orderCompleted)
+    {
+        <p style="color: green">سفارش نهایی شده</p>
+    }
+    else
+    {
+        <p style="color: red">***سفارش تکمیل نشده***</p>
+    }
+
+    <button class="MyBtn" onclick="printDiv()" style="margin: 20px">چاپ فاکتور</button>
+
+    @if(ViewBag.HasHomePageButton)
+    {
+        <br>
+        <button class="MyBtn YellowBtn" onclick="window.location.href='/'" style="margin: 20px">
+            صفحه اصلی
+        </button>
+    }
+
+</div>
+
+<script type="text/javascript">
+    function printDiv() {
+        Array.from(document.getElementsByClassName('MyBtn'))
+            .forEach(x => x.style.visibility = 'hidden');
+        window.print();
+        Array.from(document.getElementsByClassName('MyBtn'))
+            .forEach(x => x.style.visibility = 'visible');
+    }
+</script>

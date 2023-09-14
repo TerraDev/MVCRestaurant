@@ -1,0 +1,44 @@
+﻿@model IEnumerable<MVCRestaurant.ViewModels.FoodItemViewModel>
+
+@{
+    Layout = null;
+}
+
+@foreach (var item in Model)
+{
+    <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-3" style="padding: 0px;">
+        <div class="card" style="width:250px; height:100%; margin: 0 auto; border-radius:10px; background-color:#ebcc00;">
+
+            @if (string.IsNullOrEmpty(item.ImagePath))
+            {
+                <img class="card-img-top" src="/static/tmp/food-icon-default.jpg" alt="Card image" style="aspect-ratio: 1/1; border-radius:10px 10px 0 0">
+            }
+            else
+            {
+                <img class="card-img-top" src="@item.ImagePath" alt="Card image" style="aspect-ratio: 1/1; border-radius:10px 10px 0 0">
+            }
+
+            <div class="card-body" style="border-radius:0 0 10px 10px;
+                background: linear-gradient(to bottom, #ffff66 15%, #cc9900 95%);">
+
+                <h4 class="card-title">@Html.DisplayFor(modelItem => item.name)</h4>
+                <p class="card-text">@Html.DisplayFor(modelItem => item.price) تومان</p>
+
+                @if (ViewBag.orderDic.ContainsKey(item.id))
+                {
+                    <span id="foodItem_@item.id" class="QCUI">
+                        <i class="bi bi-caret-up-square-fill" style="display:inline;" onclick="AddToCart(@item.id, true)"></i>
+                        <p style="display:inline">@ViewBag.orderDic[item.id]</p>
+                        <i class="bi bi-caret-down-square-fill" style="display:inline;" onclick="AddToCart(@item.id, false)"></i>
+                    </span>
+                }
+                else
+                {
+                    <a class="btn btn-primary" onclick="AddToCart(@item.id,true)">افزودن به سبد خرید</a>
+                }
+                <br />
+                <a asp-action="Details2" asp-controller="FoodItem" asp-route-foodId="@item.id" target="_blank">مشاهده جزئیات</a>
+            </div>
+        </div>
+    </div>
+}

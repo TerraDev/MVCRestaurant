@@ -1,0 +1,89 @@
+﻿@model MVCRestaurant.ViewModels.OrderViewModel
+
+@{
+    ViewData["Title"] = "سبد خرید";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>@ViewData["Title"]</h1>
+@if(Model.orderItems.Count == 0)
+{
+    <div>غذایی سفارش نشده!</div>
+}
+else
+{
+    <div class="table-responsive text-center">
+        <table class="table table-striped table-bordered">
+            <thead>
+                <tr style="background-color: white">
+                    <th>#</th>
+                    <th>تصویر</th>
+                    <th>نام غذا</th>
+                    <th>قیمت پایه</th>
+                    <th>قیمت کل</th>
+                    <th>تعداد</th>
+                    <th style="width: 16px;"></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.orderItems)
+                {
+                    <tr>
+                        <td>@Html.DisplayFor(x => item.food.id)</td>
+                        <td>
+                            @if (string.IsNullOrEmpty(item.food.ImagePath))
+                            {
+                                <img src="/static/tmp/food-icon-default.jpg" alt="Card image"
+                         style="width: 100%; max-width:200px; display: block; margin-left: auto;margin-right: auto;">
+                            }
+                            else
+                            {
+                                <img src="@item.food.ImagePath" alt="Card image"
+                         style="width: 100%; max-width:200px; display: block; margin-left: auto;margin-right: auto;">
+                            }
+                        </td>
+                        <td>@Html.DisplayFor(x => item.food.name)</td>
+                        <td>@Html.DisplayFor(x => item.food.price) تومان</td>
+                        @{
+                            ulong finalPrice = item.food.price * item.quantity;
+                            <td>@finalPrice</td>
+                        }
+                        <td>@Html.DisplayFor(x => item.quantity)</td>
+                        <td>X</td>
+                    </tr>
+                }
+                <tr>
+                    <td colspan="4">مجموع</td>
+                    <td colspan="3">@Html.DisplayFor(x => x.Total)</td>
+                </tr>
+                <tr>
+                    <td colspan="4">مالیات</td>
+                    @{
+                        float tax1 = Model.Tax * 100;
+                    }
+                    <td colspan="3">@Html.DisplayFor(x => tax1) %</td>
+                </tr>
+                <tr style="height:50px; font-size: 20px">
+
+                    <td colspan="4"><b>قیمت نهایی</b></td>
+                    <td colspan="3"><b>@Html.DisplayFor(x => x.FinalPrice) تومان</b></td>
+
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <form class="d-flex justify-content-center mb-5" asp-action="Purchase">
+        <button type="submit" class="btn btn-lg btn-warning text-center px-5 mt-2">ثبت سفارش</button>
+    </form>
+
+    <style>
+        tbody tr:nth-child(odd) {
+            background-color: #e8fc65;
+        }
+
+        tbody tr:nth-child(even) {
+            background-color: white;
+        }
+    </style>
+}

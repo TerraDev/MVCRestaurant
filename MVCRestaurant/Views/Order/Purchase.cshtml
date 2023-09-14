@@ -1,0 +1,164 @@
+﻿@model MVCRestaurant.ViewModels.OrderViewModel
+
+@{
+    ViewData["Title"] = "صفحه پرداخت";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h1>صفحه پرداخت (غیر واقعی)</h1>
+
+<div class="mb-5">
+    <hr />
+    <div class="row">
+        <div class="col-md-6 mt-2 pb-2">
+           <div class="bg-dark text-white rounded-3 ps-sm-5 px-2 pt-4">
+                <div class="row mb-4 ml-5">
+                    <div class="col-sm-2">
+                        <label>انتخاب کارت</label>
+                    </div>
+                    <div class="col-sm-10">
+                        <select id="cars" disabled class="form-select">
+                            <option>بانک ملت</option>
+                            <option>بانک مسکن</option>
+                            <option selected>بانک پارسیان</option>
+                            <option>بانک سپه</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="row mb-4 ml-5">
+                    <div class="col-sm-2">
+                        <label>شماره کارت</label>
+                    </div>
+                    <div class="col-sm-10">
+                        <div class="row">
+                            <div class="col-12">
+                                <input type="text" maxlength="4" style="width: 60px; display:inline" 
+                                class="form-control" value="5400" disabled/>
+                                <span>-</span>
+                                <input type="text" maxlength="4" style="width: 60px; display:inline" 
+                                class="form-control" value="2917" disabled/>
+                                <span>-</span>
+                                <input type="text" maxlength="4" style="width: 60px; display:inline"
+                                class="form-control" value="9011" disabled/>
+                                <span>-</span>
+                                <input type="text" maxlength="4" style="width: 60px; display:inline" 
+                                class="form-control" value="5212" disabled/>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row mb-4 ml-5">
+                    <div class="col-sm-2">
+                        <label>رمز اینترنتی</label>
+                    </div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" disabled value="383915"/>
+                    </div>
+                </div>
+                <div class="row mb-4 ml-5">
+                    <div class="col-sm-2">
+                        <label>CVV2</label>
+                    </div>
+                    <div class="col-sm-10">
+                        <input type="text" class="form-control" disabled value="250"/>
+                    </div>
+                </div>
+                <div class="row mb-4 ml-5">
+                    <div class="col-sm-2">
+                        <label>تاریخ انقضا</label>
+                    </div>
+                    <div class="col-sm-10">
+                        <div class="row">
+                            <div class="col-6">
+                                <span style="display: inline">ماه:</span>
+                                <input type="text" class="form-control" disabled value="02" style="display: inline"/>
+                            </div>
+                            <div class="col-6">
+                                <span style="display: inline">سال:</span>
+                                <input type="text" class="form-control" disabled value="1406" style="display: inline" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4 ml-5">
+                    <div class="col-sm-2">
+                        <label>کد امنیتی</label>
+                    </div>
+                    <div class="col-sm-10 row">
+                        <div class="col-6">
+                            <input type="text" class="form-control" disabled style="display: inline" value="g9u6h" />
+                        </div>
+                        <div class="col-6">
+                            <img src="/static/tmp/fake-captcha.png" class="col-6 rounded-2" 
+                            style="display:inline; height:40px; width:85%;" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row mb-4 ml-5">
+                    <div class="col-sm-2">
+                        <label>مبلغ</label>
+                    </div>
+                    <div class="col-sm-10">
+                        @{
+                            var price = Model.FinalPrice * 10;
+                        
+                        <p style="font-size: 20px">@Html.DisplayFor(x => price) ریال</p>
+                        }
+                    </div>
+                </div>
+                <form class="d-flex justify-content-center mb-3" asp-action="PurchaseComplete">
+                    @Html.HiddenFor(x => x.Identifier)
+                    <button  type="submit" class="btn btn-lg btn-warning text-center px-5 mt-2 mb-3">پرداخت وجه</button>
+                </form>
+           </div>
+        </div>
+        <div class="col-md-6 bg-white my-4 mt-2 rounded-3">
+            <p>فاکتور خرید:</p>
+            <style>
+                td, th {
+                    border: 1px solid black;
+                    text-align: center;
+                }
+            </style>
+            <table width="100%">
+                <tr>
+                    <th>ردیف</th>
+                    <th>غذا</th>
+                    <th>قیمت</th>
+                    <th>تعداد</th>
+                    <th>قیمت کل</th>
+                </tr>
+                @{int i = 0;}
+                @foreach(OrderItemViewModel item in Model.orderItems)
+                {
+                    i++;
+                    <tr>
+                        <th>@i</th>
+                        <th>@Html.DisplayFor(x => item.food.name)</th>
+                        <th>@Html.DisplayFor(x => item.food.price)</th>
+                        <th>@Html.DisplayFor(x => item.quantity)</th>
+                        @{
+                            var total = item.food.price * item.quantity;
+                            <th>@total</th>
+                        }
+                    </tr>
+                }
+                <tr>
+                    <td colspan="4">مجموع</td>
+                    <td>@Html.DisplayFor(x => x.Total)</td>
+                </tr>
+                <tr>
+                    <td colspan="4">مالیات</td>
+                    <td>@Html.DisplayFor(x => x.Tax)%</td>
+                </tr>
+                <tr style="height:50px; font-size: 20px">
+                    
+                    <td colspan="4"><b>قیمت نهایی</b></td>
+                    <td><b>@Html.DisplayFor(x => x.FinalPrice) تومان</b></td>
+                    
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

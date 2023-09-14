@@ -1,0 +1,30 @@
+﻿@model MVCRestaurant.ViewModels.FoodItemViewModel
+
+@{
+    Layout = null;
+}
+
+<div>
+    <div class="row">
+        <div class = "col-sm-6">
+            @Html.DisplayNameFor(model => model.name):
+            @Html.DisplayFor(model => model.name)
+        </div>
+        <div class = "col-sm-6">
+            @Html.DisplayNameFor(model => model.price):
+            @Html.DisplayFor(model => model.price)
+        </div>
+    </div>
+    <div class="col-sm-6">
+        @Html.DisplayNameFor(model => model.category.name):
+        @Html.DisplayFor(model => model.category.name)
+    </div>
+    @if(!string.IsNullOrEmpty(@Model.ImagePath))
+    {
+        <img src="@Model.ImagePath" style="width: 100%; aspect-ratio: 1/1" />
+    }
+    else
+    {
+        <p>No image</p>
+    }
+</div>
